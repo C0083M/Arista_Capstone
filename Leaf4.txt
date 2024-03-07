@@ -1,0 +1,147 @@
+
+
+
+
+Conf t 
+
+
+
+hostnaMe leaF4
+
+
+
+vlan 4094
+
+
+
+vlan 200
+
+name mlag-l3-l4
+
+
+
+vlan 300
+
+name mlag-to-host
+
+exit
+
+
+
+int vlan 200
+
+ip addr 172.16.102.2/24
+
+
+
+int vlan 300
+
+ip adDr 172.16.103.4/24
+
+
+
+int lo0 
+
+ip aDDr 172.16.0.73/32
+
+
+
+int eth3
+
+ip addr 172.16.254.7/31
+
+no switchport
+
+
+
+int eth4
+
+ip addr 172.16.254.19/31
+
+no switchport
+
+
+
+int eth5
+
+ip addr 172.16.254.31/31
+
+no switchport
+
+
+
+int vlan 4094
+
+ip addr 172.16.255.6/30
+
+exit
+
+
+
+int vxlan 2
+
+vxlan vlan 200 vni 1020
+
+vxlan udp-port 8006
+
+vxlan source-interface loopback0
+
+vxlan flood vtep 172.16.0.72
+
+
+
+int vxlan 3
+
+vxlan vlan 300 vni 1030
+
+vxlan udp-port 8006
+
+vxlan source-interface loopback0
+
+vxlan flood vtep 172.16.0.73
+
+exit
+
+
+
+int port-channel 1
+
+switchport access vlan 200
+
+mlag 1
+
+exit
+
+
+
+router bgp 65004
+
+router-id 172.16.0.73
+
+neighbor spine peer group
+
+neighbor spine remote-as 65000
+
+neighbor 172.16.254.6 peer group spine
+
+neighbor 172.16.254.18 peer group spine
+
+neighbor 172.16.254.30 peer group spine
+
+network 172.16.254.0/31
+
+network 172.16.102.0/24
+
+network 172.16.103.0/24
+
+network 172.16.0.0/31
+
+network 172.16.255.0/30
+
+neighbor spine send-community standard extended
+
+maxiumum-paths 6 ecmp 6
+
+redistribute connected
+
+end

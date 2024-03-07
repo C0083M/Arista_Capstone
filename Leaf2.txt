@@ -1,0 +1,162 @@
+hostname Leaf2
+
+
+
+ip routing
+
+
+
+vlaN 100
+
+name mlag-l1-l2
+
+exit
+
+
+vlan 200
+
+name mlag-l3-l4
+
+exit
+
+
+vlan 4094
+
+exit
+
+
+int port-channel 1
+
+description mlag link to leaf2
+
+switchport access vlan 100
+
+mlag 1
+
+
+int eth1
+
+desCription mlag link to leaf1-eth1
+
+
+int eth2
+
+description mlag link to leaf1-eth2
+
+
+
+int range eth1-2
+
+channel-group 1 mode active
+
+lacp timer fast
+
+
+int eth3
+
+no switchport
+
+ip address 172.16.254.3 255.255.255.254
+
+description connection to spine1-eth3
+
+
+int eth4
+
+no switchport
+
+ip address 172.16.254.15 255.255.255.254
+
+description connection to spine2-eth3
+
+
+int eth5
+
+no switchport
+
+ip address 172.16.254.27 255.255.255.254
+
+description connection to spine3-eth2
+
+
+int lo0
+
+ip address 172.16.0.71 255.255.255.255
+
+description loopback 0 for vtep
+
+
+int vlan 10
+
+ip address 172.16.101.1/24
+
+description vni for vxlan 1010
+
+
+int vlan 30
+
+ip address 172.16.103.1/24
+
+description vni for vxlan 1030
+
+
+int vlan 4094
+
+ip address 172.16.255.2/30
+
+description vni for vxlan 4094
+
+int vxlan1
+
+vxlan source-interface lo0
+
+vxlan udp-port 8004
+
+vxlan vlan 10 vni 10
+
+vxlan flood vtep 172.16.0.70/32
+
+int vxlan3
+
+vxlan source-interface lo0
+
+vxlan udp-port 8004
+
+vxlan vlan 30 vni 30
+
+vxlan flood vtep 172.16.0.70/32
+
+
+router bgp 65001
+
+router-id 172.16.0.71
+
+maximum-paths 6
+
+neighbor spine peer group
+
+neighbor spine remote-as 65000
+
+neighbor spine send-community standard extended
+
+neighbor 172.16.254.1 peer group spine
+
+neighbor 172.16.254.13 peer group spine
+
+neighbor 10.255.255.2 next hop-self
+
+network 172.16.100.0/24
+
+network 172.16.0.70/32
+
+network 172.16.254.0/31
+
+network 172.16.254.12/31
+
+network 172.16.254.24/31
+
+network 172.16.255.0/30
+
+redistribute connected
+
+end

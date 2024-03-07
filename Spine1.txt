@@ -1,0 +1,104 @@
+ device: SPINE1 (cEOSLab, EOS-4.30.5M-35156751.4305M (engineering build))
+!
+no aaa root
+!
+username admin privilege 15 role network-admin secret sha512 $6$eucN5ngreuExDgwS$xnD7T8jO..GBDX0DUlp.hn.W7yW94xTjSanqgaQGBzPIhDAsyAl9N4oScHvOMvf07uVBFI4mKMxwdVEUVKgY/.
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname SPINE1
+!
+spanning-tree mode mstp
+no spanning-tree vlan-id 4094
+spanning-tree mst 0 priority 4096
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vlan 10
+   name Ten
+!
+vlan 20
+   name Twenty
+!
+vlan 4094
+   name FourNine
+!
+vrf instance MGMT
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+aaa authorization exec default local
+!
+interface Ethernet1
+!
+interface Ethernet2
+   description Connected to leaf1-eth3
+   no switchport
+   ip address 172.16.254.0/31
+!
+interface Ethernet3
+   description connected to leaf1-eth3
+   no switchport
+   ip address 172.16.254.2/31
+!
+interface Ethernet4
+   description Connected to leaf3-eth3
+   no switchport
+   ip address 172.16.254.4/31
+!
+interface Ethernet5
+   description Connected to leaf4-eth3
+   no switchport
+   ip address 172.16.254.6/31
+!
+interface Ethernet6
+   description connected to BorderLeaf1-eth3
+   no switchport
+   ip address 172.16.254.8/31
+!
+interface Ethernet7
+   description Connected to BorderLeaf2-eth3
+   no switchport
+   ip address 172.16.254.10/31
+!
+interface Loopback0
+   ip address 172.16.0.101/32
+!
+interface Management0
+   vrf MGMT
+   ip address 172.100.100.101/24
+!
+interface Vlan20
+!
+interface Vlan4094
+!
+ip virtual-router mac-address aa:aa:bb:bb:cc:cc
+!
+ip routing
+no ip routing vrf MGMT
+!
+ip route vrf MGMT 0.0.0.0/0 172.100.100.1
+!
+router bgp 65000
+   router-id 172.16.0.101
+   neighbor 172.16.254.1 remote-as 65001
+   neighbor 172.16.254.3 remote-as 65002
+   neighbor 172.16.254.5 remote-as 65003
+   neighbor 172.16.254.7 remote-as 65004
+   neighbor 172.16.254.9 remote-as 65500
+   neighbor 172.16.254.11 remote-as 65500
+   network 172.16.0.101/32
+!
+management ssh
+   vrf MGMT
+      no shutdown
+!
+end

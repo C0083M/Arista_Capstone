@@ -1,0 +1,178 @@
+conf t
+
+
+
+hosTNAME borderleaf2
+
+
+
+vlan 100
+
+   namE ten
+   exit
+   
+   
+   vlan 200
+   
+   name twenty
+   exit
+   
+   vlan 300
+   
+      nAme Thirty
+      exit
+      
+      
+      vlan 4094
+      
+         name mlag-peer-link
+         trunk group MLAGPEER
+         exit
+         
+         
+         
+         
+Ip routinG
+
+
+
+
+
+inteRface vlan4094
+
+
+
+
+
+
+
+
+
+int eth3
+
+no switchport
+
+ip add 172.16.254.11/31 
+
+desc connection to spine1 - eth7
+
+no shut
+
+
+
+int eth4 
+
+no switchport
+
+ip add 172.16.254.23/31
+
+desc connection to spine2 - eth7
+
+no shut
+
+
+
+int lo0
+
+ip add 172.16.0.202/32
+
+desc loopback 0 for vtep
+
+
+
+int lo1 
+
+ip add 172.16.1.201/32
+
+desc loopback 0 for vtep
+
+
+
+int vlan 1010
+
+ip add 172.16.101.1/24
+
+
+
+int vlan 1020
+
+ip add 172.16.102.1/24
+
+
+
+int vlan 1030
+
+ip add 172.16.103.1/24
+
+
+
+int vlan 4094 
+
+ip addr 172.16.255.10/30
+
+
+
+
+
+
+no spanning-tree vlan-id 4094
+
+
+
+
+
+interface port-channel1
+
+description mlag peer-link to borderleaf1
+
+switchport mode trunk
+
+switchport trunk group MLAGPEER
+
+
+
+interface ethernet1,6
+
+description mlag peer-link to borderleaf1
+
+channel-group 1 mode active
+
+
+
+
+
+router bgp 65500
+
+ router-iD 172.16.0.201
+
+ bgp log-NeigHbor-chanGEs
+
+ DIstance bgp 20 200 200
+
+ maximuM-PAths 3 Ecmp 3
+ 
+  neighbor ebgp-to-spine-peer peer group
+  
+   neighbor ebgp-to-spine-peer remote-as 65000
+   
+    neighbor ebgp-to-spine-peer allowas-in 1
+    
+     neighbor ebgp-to-spine-peer maximum-routes 12000
+     
+      neighbor 172.16.254.10 peer group EBGP-TO-SPINE-PEER
+      
+       neighbor 172.16.254.22 peer group EBGP-TO-SPINE-PEER
+       
+        neighbor 172.16.254.34 peer group EBGP-TO-SPINE-PEER
+        
+         network 172.16.0.202/32
+         
+          network 172.16.1.201/32
+          
+           redistribute connected
+           
+           
+           
+           end
+           
+           
