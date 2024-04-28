@@ -1,129 +1,260 @@
-Conf t
-
-
-
-hostname leaf3
-
-
-
-vlaN 4094
-
-name mlag-domain
-
-
-
+! Command: show running-config
+! device: Leaf3 (cEOSLab, EOS-4.30.5M-35156751.4305M (engineering build))
+!
+no aaa root
+!
+username Perez-SanchezJ secret sha512 $6$xDG3PDH6bFKTq8Cp$LO.AglCal1jCP86QgMiUGGLrSfmKPgmG9iONFY5nlSs32LYjSqJRKhaLQCoFi75Tij7O9gPokwtpAQs29G3Iu.
+username admin privilege 15 role network-admin secret sha512 $6$eucN5ngreuExDgwS$xnD7T8jO..GBDX0DUlp.hn.W7yW94xTjSanqgaQGBzPIhDAsyAl9N4oScHvOMvf07uVBFI4mKMxwdVEUVKgY/.
+!
+terminal length 0
+!
+daemon TerminAttr
+   exec /usr/bin/TerminAttr -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -cvaddr=apiserver.cv-staging.corp.arista.io:443 -cvauth=token-secure,/tmp/cv-onboarding-token -cvvrf=MGMT -taillogs
+   no shutdown
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname Leaf3
+ip name-server vrf MGMT 8.8.8.8
+!
+spanning-tree mode mstp
+no spanning-tree vlan-id 4094
+spanning-tree mst 0 priority 4096
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vlan 100
+   name Host_Network_100
+!
 vlan 200
-
-name mlag-l3-l4
-
-
-
+   name Host_Network_200
+!
 vlan 300
-
-name mlag-host
-
-exit
-
-
-
-int lo0 
-
-ip addr 172.16.0.72/32
-
-
-
-int eth3
-
-iP addr 172>!6.254.5/3!
-
-no switchport
-
-
-
-int eth4
-
-ip adDR 172.16.254.17/31
-
-no switchport
-
-
-
-int eth5
-
-ip addr 172.16.254.29/31
-
-no switchport
-
-
-
-int vlan 4094
-
-ip addr 172.16.255.5/30
-
-exit
-
-
-
-int vxlan 2
-
-vxlan vlan 200 vni 1020
-
-vxlan source-interface loopback0
-
-vxlan flood vtep 172.16.0.72
-
-
-
-int vxlan 3
-
-vxlan vlan 300 vni 1030
-
-vxlan source-interface loopback0
-
-vxlan flood vtep 172.16.0.73
-
-exit
-
-
-
-int port-channel 1
-
-switchport access vlan 200
-
-mlag 1
-
-exit
-
-
-
+   name Host_Network_300
+!
+vlan 401
+   name Leaf3-4-stadard-vlan
+!
+vlan 4094
+   name MLAG_PEER
+   trunk group MLAGPEER
+!
+vrf instance MGMT
+!
+vrf instance VXLAN_VRF
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+aaa authorization exec default local
+!
+interface Port-Channel1
+   description MLAG link to Leaf4
+   switchport mode trunk
+   switchport trunk group MLAGPEER
+!
+interface Port-Channel2
+   description Mlag link to hosts
+   switchport trunk allowed vlan 200,300,401
+   switchport mode trunk
+   mlag 2
+!
+interface Port-Channel3
+   description MLAG link to host
+   switchport trunk allowed vlan 300
+   switchport mode trunk
+   mlag 3
+!
+interface Ethernet1
+   description MLAG link to leaf4-eth1
+   switchport mode trunk
+   channel-group 1 mode active
+!
+interface Ethernet2
+   description MLAG link to leaf4-eth2
+   switchport mode trunk
+   channel-group 1 mode active
+!
+interface Ethernet3
+   description connection to Spine1-eth4
+   no switchport
+   ip address 172.16.254.5/31
+!
+interface Ethernet4
+   description connection to Spine2-eth4
+   no switchport
+   ip address 172.16.254.17/31
+!
+interface Ethernet5
+   description connection to Spine3-eth3
+   no switchport
+   ip address 172.16.254.29/31
+!
+interface Ethernet6
+!
+interface Ethernet7
+   description MLAG Downlink - Host12
+   channel-group 2 mode active
+!
+interface Ethernet8
+   description MLAG Downlink - Host13
+   channel-group 3 mode active
+!
+interface Loopback0
+   description Management and Router-id
+   ip address 172.16.0.72/32
+!
+interface Loopback1
+   description VTEP
+   ip address 172.16.1.69/32
+   ip address 172.16.1.90/32 secondary
+!
+interface Management0
+   vrf MGMT
+   ip address 172.100.100.106/24
+!
+interface Vlan100
+   description VNI for vxlan 1030
+   ip address 172.16.101.13/24
+   ip virtual-router address 172.16.101.1
+!
+interface Vlan200
+   description VNI for vxlan 1020
+   ip address 172.16.102.13/24
+   ip virtual-router address 172.16.102.1
+!
+interface Vlan300
+   description VNI for VLAN 1030
+   ip address 172.16.103.13/24
+   ip virtual-router address 172.16.103.1
+!
+interface Vlan401
+   description test vlan for Leaf3-4
+   ip address 10.0.41.2/24
+   ip virtual-router address 10.0.41.1
+!
+interface Vlan4094
+   description VNI for vxlan 4094(MLAG)
+   ip address 172.16.255.5/30
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan virtual-router encapsulation mac-address mlag-system-id
+   vxlan udp-port 4789
+   vxlan vlan 100 vni 1010
+   vxlan vlan 200 vni 1020
+   vxlan vlan 300 vni 1030
+!
+ip virtual-router mac-address 00:1c:75:00:00:ff
+!
+ip routing
+no ip routing vrf MGMT
+no ip routing vrf VXLAN_VRF
+!
+ip prefix-list LOOPBACKS
+   seq 10 permit 172.16.0.0/24 eq 32
+   seq 20 permit 172.16.1.0/24 eq 32
+!
+ip prefix-list VLAN400
+   seq 10 permit 10.0.4.0/24
+   seq 20 permit 10.0.42.0/24
+   seq 30 permit 10.0.41.0/24
+!
+ip prefix-list mgmt-route
+   seq 10 deny 172.100.100.0/24 le 32
+   seq 20 deny 0.0.0.0/0
+   seq 30 permit 0.0.0.0/0 le 32
+!
+mlag configuration
+   domain-id MLAG
+   local-interface Vlan4094
+   peer-address 172.16.255.6
+   peer-link Port-Channel1
+!
+ip route vrf MGMT 0.0.0.0/0 172.100.100.1
+!
+route-map mgmt-route permit 10
+   match ip address prefix-list mgmt-route
+!
+route-map underlay-routes permit 100
+   match ip address prefix-list LOOPBACKS
+!
+route-map underlay-routes permit 110
+   match ip address prefix-list VLAN400
+!
 router bgp 65003
-
-router-id 172.16.0.72
-
-neighbor spine peer group
-
-neighbor spine remote-as 65000
-
-neighbor 172.16.254.4 peer group spine
-
-neighbor 172.16.254.16 peer group spine
-
-neighbor 172.16.254.28 peer group spine
-
-network 172.16.254.0/31
-
-network 172.16.102.0/24
-
-network 172.16.103.0/24
-
-network 172.16.0.0/31
-
-network 172.16.255.0/30
-
-NEighbor spine send-community standard extended
-
-maximum-paths 6
-
-redistribute connected
-
-
+   router-id 172.16.0.72
+   rd auto
+   maximum-paths 6
+   neighbor MLAG peer group
+   neighbor MLAG next-hop-self
+   neighbor MLAG send-community standard extended
+   neighbor SPINE peer group
+   neighbor SPINE remote-as 65000
+   neighbor SPINE send-community standard extended
+   neighbor SPINE maximum-routes 12000
+   neighbor evpn peer group
+   neighbor evpn update-source Loopback0
+   neighbor evpn ebgp-multihop 3
+   neighbor evpn send-community extended
+   neighbor 172.16.0.70 peer group evpn
+   neighbor 172.16.0.70 remote-as 65001
+   neighbor 172.16.0.70 update-source Loopback0
+   neighbor 172.16.0.71 peer group evpn
+   neighbor 172.16.0.71 remote-as 65002
+   neighbor 172.16.0.71 update-source Loopback0
+   neighbor 172.16.0.73 peer group evpn
+   neighbor 172.16.0.73 remote-as 65004
+   neighbor 172.16.0.73 update-source Loopback0
+   neighbor 172.16.0.201 peer group evpn
+   neighbor 172.16.0.201 remote-as 65500
+   neighbor 172.16.0.201 update-source Loopback0
+   neighbor 172.16.0.202 peer group evpn
+   neighbor 172.16.0.202 remote-as 65500
+   neighbor 172.16.0.202 update-source Loopback0
+   neighbor 172.16.254.4 peer group SPINE
+   neighbor 172.16.254.4 update-source Ethernet3
+   neighbor 172.16.254.16 peer group SPINE
+   neighbor 172.16.254.16 update-source Ethernet4
+   neighbor 172.16.254.28 peer group SPINE
+   neighbor 172.16.254.28 update-source Ethernet5
+   neighbor 172.16.255.6 peer group MLAG
+   neighbor 172.16.255.6 remote-as 65004
+   redistribute connected
+   !
+   vlan 100
+      rd auto
+      route-target both 100:1010
+      redistribute learned
+   !
+   vlan 200
+      rd auto
+      route-target both 200:1020
+      redistribute learned
+   !
+   vlan 300
+      rd auto
+      route-target both 300:1030
+      redistribute learned
+   !
+   address-family evpn
+      neighbor evpn activate
+   !
+   address-family ipv4
+      neighbor MLAG activate
+      neighbor SPINE activate
+      no neighbor evpn activate
+      redistribute connected route-map LOOPBACKS
+!
+management ssh
+   vrf MGMT
+      no shutdown
+!
+end
