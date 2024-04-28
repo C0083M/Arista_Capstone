@@ -14,7 +14,7 @@ The goal of this project is to design and implement a Layer 3 spine and leaf net
 
 <div align="center">
 
-#  Repository Contents
+##  Repository Contents
 
 </div>
 Documentation: Contains detailed documentation about the project, including design specifications, network diagrams, and configuration guides.
