@@ -17,10 +17,8 @@ The goal of this project is to design and implement a Layer 3 spine and leaf net
 ##  Repository Contents
 
 </div>
-Documentation: Contains detailed documentation about the project, including design specifications, network diagrams, and configuration guides.
+**Documentation:** Contains detailed documentation about the project, including design specifications, network diagrams, and configuration guides.
 
-Scripts: Houses any scripts developed for automating tasks related to network deployment, configuration, or management.
+**Code:** This Github contains a YAML file that is used to configure the containerlabs enviroment taht can be viewed in graphite.
 
-Code: If applicable, this directory contains any code developed as part of the project, such as custom applications or integrations.
-
-Resources: Additional resources, such as presentations, research papers, or external references, may be found here.
+**Resources:** Additional resources, such as presentations, research papers, or external references, may be found here.
