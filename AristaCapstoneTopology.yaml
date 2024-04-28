@@ -29,7 +29,7 @@ topology:
       #     image: <REPOSITORY>:<TAG>
       # Check docker images with the following docker command:
       #     docker images
-      image: ceos:4.31.1F
+      image: ceos:4.30.5M
     linux:
       image: mitchv85/ohv-host
 
