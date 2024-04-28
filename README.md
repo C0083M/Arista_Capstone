@@ -6,7 +6,7 @@
 
 Welcome to the Arista Capstone project repository, created by: Cole Melson, Lucas Rupp, Branden Behrens, Branden Ulm, Javier Perez-Sanchez, and Michael Long.
 <div align="center">
-## Project Overview
+#### Project Overview
 </div>
 The goal of this project is to design and implement a Layer 3 spine and leaf network, leveraging VXLAN and EVPN, hosted in the Google Cloud Platform (GCP) using Arista networking cEOS and CloudVision.
 
