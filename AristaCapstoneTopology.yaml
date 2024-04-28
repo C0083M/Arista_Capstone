@@ -5,7 +5,7 @@
 # -------------------------------------------------------------
 
 #https://containerlab.dev/manual/topo-def-file/#name
-name: L2LS
+name: Arista Capstone
 
 #https://containerlab.dev/manual/topo-def-file/#prefix
 prefix: ""
@@ -269,23 +269,23 @@ topology:
 ####################
 # HOSTA            #
 ####################
-    - endpoints: ["HOSTA:eth1", "LEAF1:et6"]
-    - endpoints: ["HOSTA:eth3", "LEAF1:et7"]
-    - endpoints: ["HOSTA:eth2", "LEAF2:et6"]
-    - endpoints: ["HOSTA:eth4", "LEAF2:et7"]
+    - endpoints: ["HOSTA:et1", "LEAF1:et6"]
+    - endpoints: ["HOSTA:et3", "LEAF1:et7"]
+    - endpoints: ["HOSTA:et2", "LEAF2:et6"]
+    - endpoints: ["HOSTA:et4", "LEAF2:et7"]
 
 ####################
 # HOSTB            #
 ####################
-    - endpoints: ["HOSTB:eth1", "LEAF3:et6"]
-    - endpoints: ["HOSTB:eth3", "LEAF3:et7"]
-    - endpoints: ["HOSTB:eth2", "LEAF4:et6"]
-    - endpoints: ["HOSTB:eth4", "LEAF4:et7"]
+    - endpoints: ["HOSTB:et1", "LEAF3:et6"]
+    - endpoints: ["HOSTB:et3", "LEAF3:et7"]
+    - endpoints: ["HOSTB:et2", "LEAF4:et6"]
+    - endpoints: ["HOSTB:et4", "LEAF4:et7"]
 
 ####################
 # HOSTC            #
 ####################
-    - endpoints: ["HOSTC:eth1", "Y-BORDERLEAF1:et6"]
-    - endpoints: ["HOSTC:eth3", "Y-BORDERLEAF1:et7"]
-    - endpoints: ["HOSTC:eth2", "Z-BORDERLEAF2:et6"]
-    - endpoints: ["HOSTC:eth4", "Z-BORDERLEAF2:et7"]
+    - endpoints: ["HOSTC:et1", "Y-BORDERLEAF1:et6"]
+    - endpoints: ["HOSTC:et3", "Y-BORDERLEAF1:et7"]
+    - endpoints: ["HOSTC:et2", "Z-BORDERLEAF2:et6"]
+    - endpoints: ["HOSTC:et4", "Z-BORDERLEAF2:et7"]
