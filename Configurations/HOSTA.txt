@@ -1,0 +1,94 @@
+! Command: show running-config
+! device: HOSTA (cEOSLab, EOS-4.30.5M-35156751.4305M (engineering build))
+!
+no aaa root
+!
+username Perez-SanchezJ secret sha512 $6$xDG3PDH6bFKTq8Cp$LO.AglCal1jCP86QgMiUGGLrSfmKPgmG9iONFY5nlSs32LYjSqJRKhaLQCoFi75Tij7O9gPokwtpAQs29G3Iu.
+username admin privilege 15 role network-admin secret sha512 $6$eucN5ngreuExDgwS$xnD7T8jO..GBDX0DUlp.hn.W7yW94xTjSanqgaQGBzPIhDAsyAl9N4oScHvOMvf07uVBFI4mKMxwdVEUVKgY/.
+!
+terminal length 0
+!
+daemon TerminAttr
+   exec /usr/bin/TerminAttr -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -cvaddr=apiserver.cv-staging.corp.arista.io:443 -cvauth=token-secure,/tmp/cv-onboarding-token -cvvrf=MGMT -taillogs
+   no shutdown
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname HOSTA
+ip name-server vrf MGMT 8.8.8.8
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vlan 100,400
+!
+vlan 300
+   name Host_Link
+!
+vrf instance MGMT
+!
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+aaa authorization exec default local
+!
+interface Port-Channel1
+   switchport mode trunk
+   ip address 172.16.100.10/24
+!
+interface Port-Channel1999
+!
+interface Port-Channel2000
+!
+interface Ethernet1
+   channel-group 1 mode active
+!
+interface Ethernet2
+   channel-group 1 mode active
+!
+interface Ethernet3
+   channel-group 1 mode active
+!
+interface Ethernet4
+   channel-group 1 mode active
+!
+interface Ethernet5
+!
+interface Management0
+   vrf MGMT
+   ip address 172.100.100.111/24
+!
+interface Vlan100
+   ip address 172.16.101.201/24
+!
+interface Vlan300
+   ip address 172.16.103.201/24
+!
+interface Vlan400
+   ip address 10.0.4.201/24
+!
+interface Vlan4094
+!
+ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 172.16.103.1
+ip route 172.16.101.0/24 172.16.101.1
+ip route 172.16.103.0/24 172.16.103.1
+ip route vrf MGMT 0.0.0.0/0 172.100.100.1
+ip route vrf MGMT 0.0.0.0/0 172.100.100.111
+!
+management ssh
+   vrf MGMT
+      no shutdown
+!
+end
